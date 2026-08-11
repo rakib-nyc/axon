@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+message: "If you use this software or its data, please cite the preprint below."
+title: "AXON: a sparse binary assembly network for direct synaptic measurement across a capacity range"
+abstract: >-
+  Implementation, sweep scripts and measurement logs for a study of memory
+  capacity in a sparse binary assembly network, in which within-assembly
+  synaptic density is measured directly across the load range over which
+  sustained recall degrades.
+type: software
+authors:
+  - family-names: Islam
+    given-names: Muhammad Rakibul
+    email: imrakibul@gmail.com
+    affiliation: Independent Research
+repository-code: "https://github.com/rakib-nyc/axon"
+license: MIT
+keywords:
+  - associative memory
+  - attractor networks
+  - storage capacity
+  - sparse coding
+  - Metal
+  - Apple Silicon
+preferred-citation:
+  type: article
+  title: "Memory capacity as a retrieval limit: direct synaptic measurement across a capacity range in a sparse binary assembly network"
+  abstract: >-
+    Across a five-fold increase in stored-pattern count the sustained-recall
+    ratio falls by 3.7x while within-assembly functional synaptic density
+    remains constant, measured directly rather than inferred from behaviour.
+  authors:
+    - family-names: Islam
+      given-names: Muhammad Rakibul
+      email: imrakibul@gmail.com
+      affiliation: Independent Research
+  doi: "10.5281/zenodo.21881612"
+  url: "https://doi.org/10.5281/zenodo.21881612"
+  publisher:
+    name: Zenodo
+  year: 2026
+  month: 8

@@ -1,0 +1,777 @@
+% =====================================================================
+%  Memory capacity as a retrieval limit
+%  Muhammad Rakibul Islam -- Independent Research
+%
+%  Zenodo DOI: 10.5281/zenodo.21881612
+%  Code:       https://github.com/rakib-nyc/axon
+%
+%  Styling is original. No journal class or template is used.
+%
+%  ONE ITEM requires author input before deposit: search % VERIFY
+% =====================================================================
+
+\documentclass[10pt,twocolumn,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{mathptmx}
+\usepackage[scaled=0.90]{helvet}
+\usepackage{courier}
+
+\usepackage[a4paper,left=15mm,right=15mm,top=18mm,bottom=22mm,columnsep=6mm]{geometry}
+
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{microtype}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{stfloats}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{xurl}
+\usepackage[hidelinks,breaklinks]{hyperref}
+
+\definecolor{accent}{RGB}{17,84,102}
+\definecolor{rule}{RGB}{17,84,102}
+
+\hypersetup{
+  pdftitle={Memory capacity as a retrieval limit: direct synaptic measurement across a capacity range in a sparse binary assembly network},
+  pdfauthor={Muhammad Rakibul Islam},
+  pdfsubject={Associative memory, storage capacity, retrieval dynamics},
+  pdfkeywords={associative memory; assembly codes; storage capacity; retrieval dynamics; bounded synapses; sparse binary networks}
+}
+
+% --- headings ---
+\renewcommand{\thesection}{\Roman{section}}
+\renewcommand{\thesubsection}{\thesection-\Alph{subsection}}
+\titleformat{\section}[block]
+  {\normalsize\bfseries\sffamily\color{accent}}{\thesection.}{0.6em}{\MakeUppercase}
+\titlespacing*{\section}{0pt}{2.4ex plus 0.6ex minus 0.2ex}{1.2ex plus 0.2ex}
+\titleformat{\subsection}[block]
+  {\normalsize\bfseries\sffamily}{\Alph{subsection}.}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{1.9ex plus 0.5ex minus 0.2ex}{0.9ex plus 0.2ex}
+
+\captionsetup[table]{font=footnotesize,labelfont={bf,sf,color=accent},skip=5pt,
+                     justification=justified,labelsep=period}
+\setlist[enumerate]{leftmargin=*,itemsep=2pt,topsep=3pt}
+\setlist[itemize]{leftmargin=*,itemsep=2pt,topsep=3pt}
+
+\newcommand{\pct}{\%}
+\newcommand{\doilink}{10.5281/zenodo.21881612}
+
+\setlength{\dbltextfloatsep}{14pt plus 2pt minus 2pt}
+\renewcommand{\dbltopfraction}{0.9}
+\renewcommand{\dblfloatpagefraction}{0.7}
+\setcounter{dbltopnumber}{2}
+
+\fancypagestyle{plain}{%
+  \fancyhf{}\renewcommand{\headrulewidth}{0pt}%
+  \fancyfoot[C]{\footnotesize\color{accent}\thepage}%
+}
+\pagestyle{plain}
+
+% --- lead-in block macro (abstract / index terms) ---
+\newcommand{\leadin}[1]{\noindent{\sffamily\bfseries\color{accent}\footnotesize
+  \MakeUppercase{#1}}\hspace{0.8em}}
+
+\begin{document}
+
+% =====================================================================
+\twocolumn[
+  \begin{@twocolumnfalse}
+  \vspace*{-8mm}
+  \noindent{\color{rule}\rule{\textwidth}{1.2pt}}
+
+  \vspace{3mm}
+  \noindent{\sffamily\bfseries\LARGE\color{accent}
+   Memory Capacity as a Retrieval Limit:\\[1mm]
+   Direct Synaptic Measurement Across a Capacity Range\\[1mm]
+   in a Sparse Binary Assembly Network\par}
+  \vspace{5mm}
+  \noindent{\sffamily\normalsize MUHAMMAD RAKIBUL ISLAM\par}
+  \vspace{1mm}
+  \noindent{\footnotesize Independent Research\quad$\cdot$\quad\texttt{imrakibul@gmail.com}\par}
+  \vspace{2mm}
+  \noindent{\footnotesize
+   Preprint, August 2026\quad$\cdot$\quad
+   DOI \href{https://doi.org/\doilink}{\doilink}\quad$\cdot$\quad
+   Code \url{https://github.com/rakib-nyc/axon}\par}
+  \vspace{1mm}
+  \noindent{\footnotesize Released under a Creative Commons Attribution 4.0 International
+   (CC BY 4.0) licence.\par}
+  \vspace{3mm}
+  \noindent{\color{rule}\rule{\textwidth}{0.5pt}}
+
+  \vspace{5mm}
+  \end{@twocolumnfalse}
+]
+
+% =====================================================================
+\leadin{Abstract}
+Storage capacity in associative memory is normally treated as a property of the
+synaptic substrate: patterns superpose until interference makes them unrecoverable. This
+paper reports a sparse binary assembly network in which that account does not hold over
+the range where recall fails, established by measuring the synapses directly rather than
+inferring their state from behaviour. The network has $131{,}072$ neurons and
+$1.07\times10^{9}$ binary synapses with bounded $4$-bit counters, contrastive learning
+and an exact $k$-winners-take-all readout, and runs on a single consumer GPU. Over the
+range $24$ to $60$ stored patterns, at five random seeds per load, the sustained-recall
+ratio falls by a factor of $3.7$ while the functional density of recurrent synapses
+within stored assemblies remains constant at $80.7$--$82.2\pct$. The constancy holds
+separately for neurons exclusive to one assembly ($82.7\pct \to 81.2\pct$) and for
+neurons shared across several ($69.3\pct \to 82.1\pct$, rising) while the shared fraction
+of each assembly grows from $4.8\pct$ to $64.4\pct$, so it is not an artifact of
+averaging over a degrading sub-population. Retrieval initiation is likewise
+load-invariant in two independent measurements, and at intermediate load recurrent drive
+is maintained at unity gain while the retrieved population nonetheless drifts away from
+the stored assembly. The failure mode is identity drift into a structured neighbourhood:
+neurons visited during free running but outside the target assembly receive
+within-assembly recurrent input at $6.9\times$ the population baseline at low load,
+falling to $1.8\times$ at high load as the composition of that neighbourhood shifts from
+unallocated neurons to neurons belonging to competing assemblies. Because recall depends
+on how long retrieval is allowed to run, capacity is reported as a pair: sustained
+capacity $\approx 36$ patterns and transient capacity $\approx 200$.
+
+\vspace{3mm}
+\leadin{Index Terms}
+Assembly codes, associative memory, bounded synapses, retrieval dynamics, sparse binary
+networks, storage capacity.
+
+\vspace{4mm}
+
+% =====================================================================
+\section{Introduction}
+
+Storage capacity in associative memory is classically an interference problem. In
+Hopfield and Willshaw-type models, each stored pattern contributes to a shared synaptic
+matrix, and the cross-talk between patterns grows until retrieval fails
+\cite{knoblauch2010}. In models with bounded synapses the same logic is sharper still:
+because synaptic efficacy cannot grow without limit, storing new memories necessarily
+degrades old ones, and memory lifetime becomes the central quantity
+\cite{fusiabbott2007}. In both traditions the substrate is where capacity lives.
+
+Recent theoretical work has questioned whether this is the whole story. Tamamori's
+analysis of kernel Hopfield networks concludes that the practical storage limit is
+governed not by a lack of geometric separability in feature space but by the loss of
+dynamical stability against cross-talk noise \cite{tamamori2026,tamamori2025}, and Clark
+\cite{clark2026} shows explicitly that transient recall and persistent (fixed-point)
+recall are distinct capacities, with patterns retrievable above capacity despite the
+absence of stable attractors.
+
+Those analyses proceed from dynamics and theory. They do not open the synaptic matrix and
+inspect it while behaviour fails. The system studied here permits exactly that: the
+synapses are bounded $4$-bit counters whose functional state is a single bit, stored
+assemblies are explicit sets of neurons, and both can be enumerated exactly at any point
+during or after learning. We can therefore ask a question that is usually inaccessible:
+\emph{when recall degrades with load, has the substrate that supports it degraded?}
+
+The answer in this system is no, over the range in which the behavioural transition
+occurs. Section~\ref{sec:measured} presents that measurement and its controls,
+Section~\ref{sec:ruledout} the alternative explanations we tested and excluded, and
+Section~\ref{sec:discussion} what the result does and does not support.
+
+% =====================================================================
+\section{System Under Study}
+\label{sec:system}
+
+Full implementation detail is in Section~\ref{sec:methods}. This section gives only what
+is needed to read the results.
+
+\subsection{Population and connectivity}
+The network comprises $4096$ columns of $32$ neurons, $N = 131{,}072$ neurons in total.
+Columns $0$--$511$ ($16{,}384$ neurons) form a clamped input area; the remaining $3584$
+columns ($114{,}688$ neurons) form the recurrent pool in which assemblies are stored.
+Each neuron has $32$ dendritic branches, each sampling a fixed group of $256$ presynaptic
+neurons, giving a fan-in of $8192$ and $1.07\times10^{9}$ synapses in total. Four branches
+sample the input area (the afferent path); $28$ sample the recurrent pool.
+
+\subsection{Synapses and dynamics}
+Each synapse is a bounded $4$-bit counter stored as four bit-planes. The \emph{functional}
+weight seen by propagation is the most significant bit: a synapse either transmits or does
+not. Learning updates the counter; only threshold crossings are visible to the dynamics.
+Under the contrastive rule the counters are clipped to a symmetric band about the
+threshold. Total weight memory is $512$\,MB.
+
+At each timestep each neuron accumulates $\mathrm{popcount}(w \wedge s)$ over its
+branches, where $w$ is its functional weight vector and $s$ the presynaptic spike pattern.
+A global threshold selects the $64$ columns with the highest drive; within each selected
+column an exact $k$-winners-take-all with $k=24$ selects the firing neurons. This
+selection rule and the assembly-formation scheme it supports are closest in spirit to the
+assembly calculus of Papadimitriou et al.\ \cite{papadimitriou2020}, which combines a
+$k$-cap operation with Hebbian plasticity on random connectivity. The active set is
+therefore pinned at $64\times24 = 1536$ neurons by construction --- a fact that matters
+when interpreting turnover (Section~\ref{sec:drift}).
+
+\subsection{Learning}
+Learning is contrastive: with the cue clamped, co-active pairs are potentiated; with the
+cue released, co-active pairs are depressed. An intrinsic excitability term suppresses
+recently active neurons during learning and is disabled at readout. Unless stated
+otherwise all results use the configuration given in Section~\ref{sec:methods}, trained
+for $40$ epochs.
+
+\subsection{Metrics}
+\emph{Overlap} between neuron sets $A$ and $B$ is $|A\cap B|/\sqrt{|A|\,|B|}$.
+\emph{Recall} is the overlap between the retrieved state and the assembly stored for that
+cue, measured at a $75\pct$ cue. \emph{Best-other} is the maximum overlap with any
+non-target assembly. \emph{Margin} is recall minus best-other. \emph{Sustained ratio} is
+the overlap with the stored assembly at the last free step divided by that at the first
+free step, over a $30$-step free run; the sustained criterion is a ratio of at least
+$0.5$. Every figure reported below is accompanied by an untrained control run under
+identical settings.
+
+The sustained ratio is a quotient and becomes uninterpretable when its denominator
+collapses, so it is reported only under three conditions: (a) mean free-phase recurrent
+drive to assembly members exceeds twice the untrained floor of $29$, (b) recall exceeds
+best-other, and (c) the matched untrained control does not itself satisfy the sustained
+criterion. Each condition excludes a distinct degenerate case: (a) collapse of network
+activity, (b) stable retrieval of a state other than the target, and (c) mechanisms that
+hold any state regardless of what is stored.
+
+% =====================================================================
+\section{Results}
+\label{sec:measured}
+
+\subsection{Recurrent synaptic density is constant across the behavioural transition}
+\label{sec:density}
+
+We measure \emph{within-assembly functional density}: among all synapses whose
+presynaptic and postsynaptic neurons both belong to a given stored assembly, the fraction
+whose counter is above threshold. This is computed exactly, over the $28$ recurrent
+branches only, for every assembly.
+
+Table~\ref{tab:capacity} gives the full capacity sweep and Table~\ref{tab:seeds} the
+five-seed replication over the range in which the behavioural transition occurs.
+
+\begin{table*}[!t]
+\centering
+\caption{Capacity sweep, one run per load. ``within'' is within-assembly functional
+density; ``drive'' is mean recurrent drive to assembly members at the first free step;
+``criterion'' records whether the sustained ratio satisfies the three conditions of
+Section~\ref{sec:system}. Untrained controls were run at every load and are flat:
+within-assembly density $6.3613\pct$ at all loads, margin $-0.029$ to $-0.079$, drive
+$28$, none satisfying the criterion. Single-run sustained ratios should be read against
+the replicated values in Table~\ref{tab:seeds}.}
+\label{tab:capacity}
+\small
+\begin{tabular}{rrrrrrrl}
+\toprule
+patterns & within (\pct) & recall & best-other & margin & sustained & drive & criterion \\
+\midrule
+12  & 82.09 & 0.746 & 0.042 & $+0.704$ & 0.661 & 118 & met \\
+24  & 82.41 & 0.803 & 0.089 & $+0.714$ & 0.597 & 119 & met \\
+36  & 81.34 & 0.802 & 0.129 & $+0.673$ & 0.652 & 120 & met \\
+48  & 82.07 & 0.705 & 0.167 & $+0.537$ & 0.284 & 118 & met \\
+60  & 81.78 & 0.674 & 0.182 & $+0.492$ & 0.207 & 116 & met \\
+74  & 78.40 & 0.551 & 0.195 & $+0.356$ & 0.090 & 111 & met \\
+90  & 74.27 & 0.421 & 0.182 & $+0.239$ & 0.046 & 104 & met \\
+140 & 64.94 & 0.347 & 0.178 & $+0.169$ & 0.027 & 93  & met \\
+200 & 63.43 & 0.237 & 0.186 & $+0.051$ & 0.020 & 96  & met \\
+300 & 64.52 & 0.137 & 0.179 & $-0.041$ & 0.024 & 102 & \emph{not met} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[!t]
+\centering
+\caption{Five-seed replication. Seeds vary the random weight initialisation, the
+connectivity and the stimulus set jointly. Density is highly reproducible; the sustained
+ratio is not. CV is the coefficient of variation of the sustained ratio.}
+\label{tab:seeds}
+\small
+\begin{tabular}{rlllr}
+\toprule
+patterns & sustained ratio (mean $\pm$ SD) & margin & within-assembly density (\pct) & sustained CV \\
+\midrule
+24 & $0.664 \pm 0.051$ & $+0.755 \pm 0.026$ & $82.23 \pm 0.17$ & $7.7\pct$ \\
+36 & $0.523 \pm 0.096$ & $+0.681 \pm 0.012$ & $81.42 \pm 0.42$ & $18.4\pct$ \\
+42 & $0.422 \pm 0.066$ & $+0.620 \pm 0.026$ & $80.69 \pm 0.63$ & $15.6\pct$ \\
+48 & $0.326 \pm 0.083$ & $+0.577 \pm 0.033$ & $81.15 \pm 0.73$ & $25.5\pct$ \\
+60 & $0.178 \pm 0.111$ & $+0.499 \pm 0.007$ & $81.49 \pm 1.12$ & $62.4\pct$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Across patterns $24$ to $60$ the sustained ratio falls by a factor of $3.7$ while
+within-assembly density stays within the band $80.7$--$82.2\pct$, with per-load standard
+deviations no larger than $1.12$ percentage points. The corresponding five-seed sustained
+ratio at $12$ patterns is $0.672$. Density does eventually erode --- $78.40\pct$ at $74$
+patterns, $74.27\pct$ at $90$, $64.94\pct$ at $140$ --- but that erosion begins well past
+the range in which the behavioural transition occurs, and is therefore a consequence of
+continued loading rather than its cause.
+
+\subsection{Capacity is reported as a pair}
+Recall depends on how long free running is allowed to continue.
+\textbf{Sustained capacity} --- the highest load at which the mean trace still retains at
+least half its initial free-run overlap after $30$ free steps --- is $\approx 36$
+patterns; the next load tested, $42$, does not satisfy the criterion
+($0.422 \pm 0.066$). It is a soft crossing rather than a boundary: the $\pm 1$\,SD
+intervals of adjacent loads overlap throughout ($36$: $[0.427,0.619]$; $42$:
+$[0.356,0.488]$; $48$: $[0.243,0.409]$), so no single run identifies which side of the
+criterion a network falls on. \textbf{Transient capacity} --- the highest load at which
+margin at a $75\pct$ cue remains positive and the criterion is met --- is $\approx 200$
+patterns. The gap between these two numbers is a property of the measurement horizon, not
+a discrepancy.
+
+\subsection{The constancy is not an averaging artifact}
+\label{sec:subgroups}
+
+A mean can conceal a degrading sub-population. The natural candidate is neurons belonging
+to more than one assembly, which are the most exposed to competing plasticity. We
+therefore split each assembly's members into \emph{shared} (belonging to at least one
+other assembly) and \emph{exclusive}, and measured density separately
+(Table~\ref{tab:subgroups}).
+
+\begin{table*}[!t]
+\centering
+\caption{Within-assembly density split by whether the postsynaptic member is shared with
+another assembly. Both groups hold; the shared group improves.}
+\label{tab:subgroups}
+\small
+\begin{tabular}{rrrrr}
+\toprule
+patterns & shared fraction & density, shared (\pct) & density, exclusive (\pct) & difference \\
+\midrule
+12 & 0.048 & 69.26 & 82.69 & $-13.4$ \\
+24 & 0.172 & 78.46 & 83.16 & $-4.7$ \\
+36 & 0.366 & 80.39 & 81.82 & $-1.4$ \\
+48 & 0.544 & 82.78 & 81.31 & $+1.5$ \\
+60 & 0.644 & 82.09 & 81.24 & $+0.8$ \\
+\midrule
+48 (untrained) & 0.496 & 6.38 & 6.35 & $+0.03$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The shared fraction of each assembly rises from $4.8\pct$ to $64.4\pct$ across the load
+range. Exclusive-member density is flat ($82.69 \to 81.24\pct$) and shared-member density
+\emph{rises} ($69.26 \to 82.09\pct$). At low load the few shared neurons are atypical
+stragglers; by high load sharing is the norm and their density matches the rest. There is
+no degrading sub-population hidden inside the mean.
+
+\subsection{Retrieval initiation is load-invariant}
+\label{sec:initiation}
+
+Two independent quantities measured at the moment of cue release do not vary with load.
+
+First, the overlap lost when the cue is removed. Writing $o_5$ for the overlap at the last
+clamp-influenced step and $o_6$ for the first genuinely free step, the ratio $o_6/o_5$ is
+$0.706 \pm 0.002$ at $12$ patterns, $0.728 \pm 0.012$ at $36$, and $0.694 \pm 0.022$ at
+$60$.
+% VERIFY: insert the number of seeds behind these three standard deviations.
+Releasing the cue costs a fixed $\approx 29\pct$ of assembly overlap regardless of how
+much is stored.
+
+Second, the recurrent drive received by assembly members at the first free step is
+$116$--$120$ over patterns $12$ to $60$ (Table~\ref{tab:capacity}); restricted to the
+exclusive-member subgroup the same quantity is $119$--$126$. We scope this claim to the
+range of the behavioural transition: beyond it the initial drive does decline ($93$ at
+$140$ patterns).
+
+Over that range, retrieval initiation is load-blind; load acts only on what follows.
+
+\subsection{At intermediate load, drive is maintained while the trace decays}
+\label{sec:gain}
+
+We define \emph{loop gain} as the ratio of recurrent drive to assembly members between
+steps of the same parity, two steps apart. Same-parity comparison is required because the
+free-running dynamics contain a period-2 component (Section~\ref{sec:period2}); a
+step-to-step ratio would conflate the oscillation with the trend.
+
+\begin{table*}[!t]
+\centering
+\caption{Loop gain per two-step period across the free run, five seeds. Gain relaxes
+towards unity at every load, approaching from above at low load and from below at high
+load. Because gain is not constant across the run, an early-window estimate cannot be
+extrapolated over the full $30$ steps.}
+\label{tab:gaintraj}
+\small
+\begin{tabular}{rrrrrrr}
+\toprule
+patterns & $t_{6\to8}$ & $t_{10\to12}$ & $t_{14\to16}$ & $t_{18\to20}$ & $t_{22\to24}$ & $t_{26\to28}$ \\
+\midrule
+12 & 1.074 & 1.035 & 1.014 & 0.988 & 1.006 & 0.986 \\
+36 & 0.998 & 1.016 & 0.996 & 1.008 & 0.977 & 0.998 \\
+60 & 0.892 & 0.950 & 0.910 & 0.940 & 0.965 & 0.971 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The row for $36$ patterns is the important one. Loop gain is $0.977$--$1.016$ --- unity
+within noise --- across the entire free run, and the active population is pinned at $1536$
+neurons by the readout. Yet overlap with the stored assembly decays from $0.720$ to
+$0.520$ over the same interval. At intermediate load the trace degrades without any loss
+of recurrent drive. Whatever is failing, it is not amplitude.
+
+\subsection{The failure mode is identity drift into a structured neighbourhood}
+\label{sec:drift}
+
+Since population size is fixed by the readout and drive is maintained, we measured which
+neurons are active and how that set changes.
+
+\paragraph{Turnover and leak.}
+Per free step, the fraction of the active set replaced is $31.3\pct$ at $12$ patterns,
+$32.9\pct$ at $36$, and $51.6\pct$ at $60$; the untrained control replaces $88$--$96\pct$
+per step. Over the same interval the overlap with the stored assembly is lost at
+$0.149 \pm 0.062$, $1.199 \pm 0.639$ and $5.162 \pm 1.844$ percent per step. The ratio of
+churn to leak is $255 \pm 148$, $37 \pm 24$ and $11 \pm 4$; these are reported as an
+ordering rather than as point values, the low-load figure being poorly resolved. What is
+well resolved is that turnover is essentially identical at $12$ and $36$ patterns
+($31.3\pct$ versus $32.9\pct$) while leak differs eightfold. Load changes the directedness
+of churn, not its magnitude.
+
+\paragraph{The active set is not a fixed population.}
+The union of all neurons active at any point during the $30$ free steps is $3265 \pm 60$
+at $12$ patterns, $4701 \pm 702$ at $36$, and $11{,}257 \pm 1410$ at $60$, against an
+active set of $1536$ --- ratios of $2.13$, $3.06$ and $7.33$. The untrained control visits
+$30{,}199 \pm 1611$ ($19.66\times$). The trace therefore cycles through a population
+substantially larger than the readout displays at any instant, and the learned constraint
+bounds the size of that population --- a ninefold tightening relative to untrained ---
+rather than fixing its membership. The union co-varies monotonically with load, as does
+the sustained ratio; we report it as a descriptive quantity and do not treat the
+correlation between them as evidence of mechanism, since any two monotone functions of
+load must correlate.
+
+\paragraph{The visited population is structured.}
+Table~\ref{tab:union} characterises it. Neurons visited during free running but outside
+the stored assembly receive within-assembly recurrent input at $59.68\pct$ at $12$
+patterns, against a population baseline of $8.62\pct$: an enrichment of $6.9\times$. In
+the untrained control the same two numbers are $6.28\pct$ and $6.25\pct$, an enrichment of
+$1.00\times$, confirming that the measurement is not an artifact of the procedure.
+
+\begin{table*}[!t]
+\centering
+\caption{Characterisation of the population visited during free running. ``dens.\ out'' is
+the functional density of recurrent synapses from stored assembly members onto
+visited-but-non-member neurons; ``dens.\ all'' is the same quantity for the whole
+recurrent pool. ``mult.'' is the mean number of assemblies a neuron belongs to, given for
+the outside group and for the whole pool.}
+\label{tab:union}
+\footnotesize
+\setlength{\tabcolsep}{4.5pt}
+\begin{tabular}{lrrrrrrr}
+\toprule
+ & in-assy. & outside & \pct\ outside & dens.\ in (\pct) & dens.\ out (\pct) & dens.\ all (\pct) & mult.\ out / pool \\
+\midrule
+12 patterns & 1531 & 1733 & 53.1 & 82.13 & 59.68 & 8.62 & $0.12 / 0.16$ \\
+36 patterns & 1536 & 3166 & 67.3 & 81.43 & 25.61 & 8.74 & $1.00 / 0.48$ \\
+60 patterns & 1536 & 9721 & 86.4 & 81.49 & 16.70 & 9.10 & $1.53 / 0.80$ \\
+\midrule
+36, untrained & 613 & 29{,}585 & 98.0 & 6.38 & 6.28 & 6.25 & $0.56 / 0.48$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Two measurements point the same way from opposite directions. The enrichment of
+within-assembly input onto visited non-members falls
+$6.9\times \to 2.9\times \to 1.8\times$ with load. Simultaneously, the
+assembly-multiplicity of those neurons inverts: at $12$ patterns they are \emph{less}
+likely than average to belong to another assembly ($0.12$ versus a population mean of
+$0.16$), that is, they are mostly unallocated neurons that happen to be well wired to this
+assembly; by $60$ patterns they are nearly twice as likely ($1.53$ versus $0.80$), that
+is, they belong to competing assemblies.
+
+Load does not merely widen the population the trace explores; it changes that
+population's composition from assembly-adjacent to inter-assembly.
+
+\subsection{Allocation}
+\label{sec:allocation}
+
+Assemblies are allocated with very low mutual overlap. At $12$ patterns the union of all
+assigned neurons is $18{,}015$ against a sum of assembly sizes of $18{,}456$ (excess
+$441$, i.e.\ $2.4\pct$ reuse), and the mean pairwise assembly Jaccard index is $0.00222$
+against a chance value of $0.00674$ for independently drawn sets of the same size ---
+$3.0\times$ below chance. The untrained control gives $0.00946$, which is $1.4\times$
+\emph{above} chance.
+
+The stricter test accounts for forced sharing. At high load, storing many assemblies of
+$1536$ neurons in a pool that the allocator uses only partially requires reuse, so the
+appropriate null is $m^{2}/U$, where $m$ is assembly size and $U$ the realised union. At
+$140$ patterns the measured mean pairwise Jaccard index is $0.00647$ against a
+sharing-adjusted null of $0.00820$ ($0.79\times$); at $300$ patterns it is $0.00777$
+against $0.00747$ ($1.04\times$), at a mean neuron multiplicity of $4.45$. Allocation
+overlap therefore remains at or below what forced sharing requires even in the heavy-reuse
+regime.
+
+Competitive learning and $k$-winners-take-all are standard mechanisms for producing
+decorrelated sparse codes \cite{makhzani2015,sacouto2023}, so sub-chance overlap is close
+to expected; what is reported here is that decorrelation persists into a regime where
+sharing is geometrically unavoidable.
+
+\paragraph{Residual best-other overlap is a tail statistic.}
+At $140$ and $300$ patterns, best-other is $0.178$ and $0.179$, but the \emph{mean}
+overlap with all non-target assemblies is $0.025$ and $0.026$ --- close to the
+sharing-adjusted null, and equal to the untrained floor of $0.025$. Best-other is
+therefore driven by a small number of high-overlap pairs rather than by uniform confusion.
+Those pairs correlate with shared cue columns (Pearson $r = +0.403$ and $+0.355$ trained,
+versus $+0.098$ and $+0.097$ untrained), so the network learns a mapping from input
+geometry into assembly geometry. Retrieval failure, however, does not track that mapping
+(Section~\ref{sec:ruledout}).
+
+\subsection{Period-2 alternation}
+\label{sec:period2}
+
+Free-running states overlap more with the state two steps earlier than with the
+immediately preceding state, in trained networks only: at $12$ patterns $J(t,t{-}2)$ runs
+from $0.474$ to $0.602$ across the free run against $J(t,t{-}1)$ of $0.485$ to $0.526$,
+whereas the untrained control gives $0.025$--$0.034$ and $0.021$--$0.036$ --- equal within
+noise. The alternation is therefore a learned dynamical property rather than a sampling
+artifact.
+
+It is not, however, the mechanism behind the wide visited population. If free running were
+a clean two-cycle over disjoint sets, each parity stream would visit $\approx 1536$
+neurons. Measured, each parity stream alone visits $1.90$--$1.93\times$ the active set at
+$12$ patterns, and the two parity sets overlap at $0.892 \pm 0.008$: they are nearly the
+same population. Parity overlap declines monotonically with load
+($0.892 \to 0.814 \to 0.746 \to 0.672 \to 0.617$ over patterns $12$ to $60$; untrained
+$0.299$), so alternation strengthens as the trace degrades. It accompanies the failure
+rather than causing it.
+
+% =====================================================================
+\section{Alternative Explanations Tested and Excluded}
+\label{sec:ruledout}
+
+Each of the following is a candidate explanation for the load-dependent decline in recall.
+Each was tested and excluded. Untrained controls accompany every entry.
+
+\paragraph{Hub capture.}
+Hypothesis: a small set of highly connected neurons wins the competition regardless of
+cue. Excluded. The functional in-degree distribution has coefficient of variation $0.150$
+and $p_{99}/p_{50} = 1.25$ --- no heavy tail. Neurons winning in at least $11$ of $12$
+free runs have \emph{lower} in-degree ($499.2$) than neurons that never win ($680.8$), a
+ratio of $0.733$, inverted relative to the prediction.
+
+\paragraph{Synaptic erosion at the boundary.}
+Hypothesis: contrastive depression driven by other patterns erodes the recurrent scaffold.
+Excluded over the relevant range: within-assembly density is $82.09$, $82.41$, $81.34$ and
+$82.07\pct$ at $12$, $24$, $36$ and $48$ patterns while the five-seed sustained ratio falls
+from $0.672$ to $0.326$ (Section~\ref{sec:density}). Erosion occurs later and is a
+consequence, not the cause.
+
+\paragraph{Allocation interference.}
+Excluded: measured pairwise assembly overlap is $0.79$--$1.04\times$ the sharing-adjusted
+null at up to $4.45\times$ forced multiplicity (Section~\ref{sec:allocation}).
+
+\paragraph{Input-space collisions.}
+Hypothesis: cues drawn from a limited input space overlap, so assemblies must overlap.
+Excluded by a controlled comparison in which pool size and afferent drive were held fixed
+and only the expected pairwise cue overlap was varied fourfold (expected shared cue
+columns $2.0$ versus $8.0$): margin $-0.080$ versus $-0.086$, mean non-target overlap
+$0.039$ versus $0.041$. Indistinguishable.
+
+\paragraph{Pool size.}
+Hypothesis: capacity is limited by the number of available neurons. Excluded at fixed code
+sparsity: over a sixfold pool range ($32{,}768$ to $200{,}704$ recurrent neurons, with the
+number of active columns scaled to hold the active-column fraction constant at $1.79\pct$),
+recall at $140$ patterns is $0.300$, $0.345$, $0.347$ and $0.325$ --- flat --- while
+within-assembly density is likewise flat at $60.7$--$65.3\pct$.
+
+\paragraph{Averaging artifact.}
+Excluded by the shared/exclusive split of Section~\ref{sec:subgroups}.
+
+\paragraph{Drive magnitude at intermediate load.}
+Excluded: loop gain is $0.977$--$1.016$ across the entire free run at $36$ patterns while
+overlap decays $0.720 \to 0.520$ (Section~\ref{sec:gain}).
+
+\paragraph{Readout-side rescue.}
+Two interventions on frozen weights were tested and neither restores sustained activity in
+a way attributable to the stored memory. Reducing $k$ does not restore it (best sustained
+ratio $0.334$ at $k=20$, worse below $k=16$); it lowers total drive rather than sharpening
+competition, and the relevant competition is between columns while $k$ operates within one.
+Adding a facilitation term favouring recently active neurons does raise the sustained ratio
+($0.284 \to 0.814$ at $48$ patterns), but the matched untrained control also sustains, at
+$1.000$: the mechanism holds any state. Measured as learned contribution (trained margin
+minus untrained margin) it \emph{reduces} the learned signal at low load, from $+0.733$ to
+$+0.268$ at $12$ patterns, while raising it at high load, from $+0.038$ to $+0.124$ at
+$300$. It is a load-dependent trade rather than a fix.
+
+% =====================================================================
+\section{Discussion}
+\label{sec:discussion}
+
+The central result is narrow: in this system, over the load range in which sustained recall
+collapses, the synapses that support recall do not change. The supporting evidence is that
+the constancy survives disaggregation into the two sub-populations where degradation would
+be expected to appear first, that two independent measurements of retrieval initiation are
+also load-invariant, and that at intermediate load recurrent drive is maintained at unity
+gain while the trace decays anyway.
+
+What replaces substrate degradation as the explanation is identity drift, and the
+characterisation in Section~\ref{sec:drift} makes that specific rather than merely
+negative: the trace visits a population two to seven times the size of the instantaneous
+active set, that population is strongly enriched for within-assembly input at low load, and
+load shifts its composition from unallocated assembly-adjacent neurons towards neurons
+belonging to competing assemblies. The composition shift, supported by two measurements
+pointing in opposite directions --- connectivity enrichment falling, assembly multiplicity
+rising --- is the most specific mechanistic statement the data support.
+
+\subsection{Relation to bounded-synapse theory}
+
+The natural comparison is to the bounded-synapse literature. Fusi and Abbott
+\cite{fusiabbott2007} show that with bounded synapses, storing new memories acts as noise
+on previously stored ones, and that memory lifetime grows with the square of the number of
+synaptic states only when potentiation and depression are precisely balanced. Our synapses
+are bounded ($4$-bit counters, clipped to a symmetric band, seven effective states) and the
+learning rule applies potentiation and depression in explicitly paired phases. The measured
+depression-to-potentiation event ratio is $0.56$--$0.79$ under the configuration used
+throughout, and $0.87$--$1.36$ at the higher depression setting. This places the system in
+the bounded-synapse regime their analysis addresses; we do not claim it satisfies the
+precise potentiation--depression balance their quadratic lifetime result requires.
+
+Their analysis concerns \emph{sequential} storage, in which each new memory perturbs those
+already stored, whereas we train all patterns \emph{interleaved to equilibrium} over $40$
+epochs. A reader may reasonably object that overwriting is avoided by construction in our
+protocol, so finding the substrate intact says nothing about their result. We answer in
+three parts. First, we concede the protocol difference and do not claim a palimpsest
+result. Second, the comparison we draw is with the prediction that bounded synapses under
+continued storage degrade as capacity is approached; we measure the substrate across the
+range where behaviour fails and find it intact, which is a statement about our system that
+does not require protocol matching. Third, the shared-member result of
+Section~\ref{sec:subgroups} responds directly to the objection: if interleaving merely
+avoided overwriting by construction, the neurons shared across many assemblies are
+precisely where it would show, and they are the group whose density \emph{rises} while the
+shared fraction grows from $4.8\pct$ to $64.4\pct$. The substrate is not immune --- density
+does fall to $74.27\pct$ and $64.94\pct$ at $90$ and $140$ patterns --- but the behavioural
+failure precedes it.
+
+\subsection{Limitations}
+
+This is a measurement study of one architecture on one machine, and one task family (cued
+recall of randomly generated column patterns). Whether the dissociation between substrate
+and retrieval holds under sequential storage, other learning rules, or other readouts is
+untested. The sustained-capacity boundary is soft, with overlapping per-load distributions,
+and should not be read as a sharp transition. Throughput figures are reported for context
+only; no result above depends on a timing measurement.
+
+% =====================================================================
+\section{Methods}
+\label{sec:methods}
+
+\subsection{Implementation}
+
+The network is implemented in Objective-C++ and Metal Shading Language and runs on the
+integrated GPU of an Apple M1 Pro ($16$-core GPU, $16$\,GB unified memory). Shaders are
+compiled at runtime from embedded source, which makes geometry specialisation by string
+substitution free; this is used to vary population size without recompiling the host
+program.
+
+The configuration used throughout unless stated: $4096$ columns of $32$ neurons; $512$
+input columns; $32$ branches per neuron of which $4$ are afferent; $256$ presynaptic
+neurons per branch; initial functional synapse density $2^{-4}$; $64$ active columns;
+$k=24$ winners per column; dendritic threshold $1$; supralinear branch mode; $64$ stimulus
+columns per pattern; contrastive learning with depression applied on alternate free steps;
+intrinsic excitability increment $73$ and decrement $1$; presentation length $T=10$ steps
+of which the first $5$ are clamped; $40$ training epochs. Seeds vary weight initialisation,
+connectivity and the stimulus set jointly. Throughput is $2554$--$2956$ timesteps per
+second trained and $3795$--$4930$ untrained, reproducible to $\pm 3\pct$ on clean single
+runs.
+
+\subsection{Verification of primitives}
+
+Correctness of the numerical primitives was established before any result was collected.
+The SIMD ballot primitive was verified lane-exact at a SIMD width of $32$ against a known
+bit pattern. The exact $k$-winners-take-all returns exactly $k$ set bits for
+$k \in \{1,3,5,8,16\}$ across all $4096$ columns, at $2.5$\,ns per column. The bit-serial
+saturating increment, decrement (borrow path) and symmetric clip were verified against a
+scalar reference over $2{,}097{,}152$ random values each, for three clip bands, with zero
+mismatches. A parallelised top-$K$ column selection was verified bit-identical to the
+serial implementation over $983{,}040$ winner-set words on an untrained network and
+$491{,}520$ on a trained one before being adopted.
+
+\subsection{Memory system and sparsity geometry}
+
+Random gather in which each lane follows its own pointer reaches $3$--$5\pct$ of peak
+bandwidth, and making the gathered blocks contiguous barely helps. The same random blocks
+read cooperatively by all $32$ lanes of a SIMD group reach $102$\,GB/s, a $13.6\times$
+improvement at identical block size and identical randomness. All synaptic access is
+therefore SIMD-group-cooperative, in tiles of $32$ postsynaptic by $128$ presynaptic binary
+weights.
+
+With neuron count, fan-in and spike count held identical, activity clustered into columns
+runs at $14{,}585$ timesteps per second against $1{,}285$ for randomly scattered activity
+--- an $11.4\times$ difference arising purely from the geometry of the sparse code, because
+a presynaptic group of $128$ neurons is silent far more often under columnar activity than
+under scattered activity at the same overall rate. Dense binary propagation reaches
+$1.36\times10^{12}$ synapse operations per second.
+
+Two alternative execution strategies were measured and rejected. A persistent kernel with a
+device-wide barrier is not viable: only $8$ threadgroups are reliably co-resident regardless
+of threadgroup size; ordinary device-memory writes are not visible across threadgroups
+within a dispatch, so all cross-threadgroup traffic would have to be atomic; and a correct
+barrier, which requires the spin read to be a read-modify-write, costs $1.7\,\mu$s against
+$2.5\,\mu$s for simply issuing a separate dispatch per timestep. Distributing computation
+across the CPU's matrix coprocessor, neural engine and efficiency cores is also ruled out:
+a host round trip costs $165\,\mu$s against timesteps of $0.35$--$0.44$\,ms, so any per-step
+offload loses.
+
+Per-kernel timing attribution used cumulative ablation in the production encoder. The
+device exposes one counter set and does not support counter sampling at dispatch
+boundaries, and a marginal-cost method is invalid here because repeated back-to-back
+dispatches of the same kernel run from cache.
+
+\subsection{Data and code availability}
+
+The complete implementation (a single Objective-C++ source file containing all Metal
+kernels), the benchmark and sweep scripts, and the measurement logs are available at
+\url{https://github.com/rakib-nyc/axon}, archived alongside this preprint at
+\href{https://doi.org/\doilink}{\doilink}. Every table in this paper is reproducible from a
+single command line with the configuration and seed recorded in the corresponding script;
+the repository README gives the command for each table.
+
+% =====================================================================
+\footnotesize
+\begin{thebibliography}{99}
+\raggedright
+
+\bibitem{fusiabbott2007}
+S.~Fusi and L.~F.~Abbott.
+\newblock Limits on the memory storage capacity of bounded synapses.
+\newblock \emph{Nature Neuroscience}, 10:485--493, 2007.
+\newblock \url{https://doi.org/10.1038/nn1859}
+
+\bibitem{clark2026}
+D.~G.~Clark.
+\newblock Transient dynamics of associative memory models.
+\newblock \emph{Physical Review E}, 113:054301, 2026. arXiv:2506.05303.
+\newblock \url{https://arxiv.org/abs/2506.05303}
+
+\bibitem{tamamori2026}
+A.~Tamamori.
+\newblock Geometric and dynamical analysis of attractor boundaries and storage limits in
+kernel Hopfield networks.
+\newblock arXiv:2605.00366, 2026.
+\newblock \url{https://arxiv.org/abs/2605.00366}
+
+\bibitem{tamamori2025}
+A.~Tamamori.
+\newblock Quantitative attractor analysis of high-capacity kernel Hopfield networks.
+\newblock arXiv:2505.01218, 2025.
+\newblock \url{https://arxiv.org/abs/2505.01218}
+
+\bibitem{knoblauch2010}
+A.~Knoblauch, G.~Palm, and F.~T.~Sommer.
+\newblock Memory capacities for synaptic and structural plasticity.
+\newblock \emph{Neural Computation}, 22(2):289--341, 2010.
+
+\bibitem{papadimitriou2020}
+C.~H.~Papadimitriou, S.~S.~Vempala, D.~Mitropolsky, M.~Collins, and W.~Maass.
+\newblock Brain computation by assemblies of neurons.
+\newblock \emph{Proceedings of the National Academy of Sciences}, 117(25):14464--14472,
+2020.
+
+\bibitem{makhzani2015}
+A.~Makhzani and B.~Frey.
+\newblock Winner-take-all autoencoders.
+\newblock arXiv:1409.2752, 2015.
+\newblock \url{https://arxiv.org/abs/1409.2752}
+
+\bibitem{sacouto2023}
+L.~Sacouto and A.~Wichert.
+\newblock Competitive learning to generate sparse representations for associative memory.
+\newblock \emph{Neural Networks}, 168:32--43, 2023. arXiv:2301.02196.
+
+\end{thebibliography}
+
+\end{document}
