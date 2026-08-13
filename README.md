@@ -4,6 +4,10 @@ Code, sweep scripts and measurement logs for the preprint **"Memory capacity as 
 
 In associative memory theory, capacity is normally a property of storage: patterns superpose in a synaptic matrix until interference makes them unrecoverable. This work reports a case where that account does not apply, established by measuring the synapses directly rather than inferring their state from behaviour. In a sparse binary assembly network (131,072 neurons, 1.07 G binary synapses, bounded 4-bit synaptic counters, contrastive learning, exact *k*-winners-take-all readout), a five-fold increase in stored patterns (12 → 60, five seeds per load) reduces the sustained-recall ratio by 3.7× while the functional density of recurrent synapses *within* stored assemblies stays constant at 80.7–82.2% — separately for neurons exclusive to one assembly and for neurons shared across several, so it is not an averaging artifact. Retrieval *initiation* is load-invariant, and at intermediate load recurrent drive is maintained at unity gain while the retrieved population nonetheless drifts away from the stored assembly. The paper reports capacity as a pair (sustained ≈ 36 patterns, transient ≈ 200) and documents at length what was ruled out, what was retired, and what was corrected along the way.
 
+> **Resuming work on this?** Read [`HANDOFF.md`](HANDOFF.md) first — it records the
+> full state, the CLI reference, what was ruled out and retired, and the mistakes
+> that cost time.
+
 ## Paper
 
 - **PDF:** [`paper/Preprint.pdf`](paper/Preprint.pdf)
