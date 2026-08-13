@@ -90,6 +90,7 @@ Their unedited state is part of the evidence — it is what allows the correctio
 ## Repository layout
 
 ```
+HANDOFF.md                  full state for resuming work — read first
 src/axon.mm                 engine: host code + all Metal kernels, single file
 build.sh                    one-command build
 bench/*.sh                  sweep scripts (see reproduction table)
